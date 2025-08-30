@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>University Courses & Faculty</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2c3e50, #3498db);
+            color: white;
+            padding: 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+            animation: shimmer 3s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            position: relative;
+            z-index: 1;
+        }
+
+        .filters {
+            padding: 30px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .filter-group {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .filter-group label {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .filter-group select, .filter-group input {
+            padding: 12px 16px;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .filter-group select:focus, .filter-group input:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .courses-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        .course-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            border: 1px solid #f1f3f4;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .course-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, #3498db, #2ecc71);
+        }
+
+        .course-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+        }
+
+        .course-header {
+            margin-bottom: 20px;
+        }
+
+        .course-code {
+            background: linear-gradient(135deg, #3498db, #2ecc71);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+
+        .course-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 8px;
+            line-height: 1.3;
+        }
+
+        .course-department {
+            color: #7f8c8d;
+            font-size: 0.95rem;
+            margin-bottom: 15px;
+        }
+
+        .course-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .info-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #5a6c7d;
+            font-size: 0.9rem;
+        }
+
+        .info-icon {
+            width: 16px;
+            height: 16px;
+            background: #3498db;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 10px;
+        }
+
+        .teacher-section {
+            border-top: 1px solid #f1f3f4;
+            padding-top: 20px;
+            margin-top: 20px;
+        }
+
+        .teacher-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .teacher-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .teacher-details h4 {
+            color: #2c3e50;
+            margin-bottom: 4px;
+            font-size: 1.1rem;
+        }
+
+        .teacher-title {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+            margin-bottom: 4px;
+        }
+
+        .teacher-contact {
+            color: #3498db;
+            font-size: 0.85rem;
+            text-decoration: none;
+        }
+
+        .teacher-contact:hover {
+            text-decoration: underline;
+        }
+
+        .search-results {
+            margin-bottom: 20px;
+            color: #7f8c8d;
+            font-style: italic;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .filter-group {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .courses-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .course-info {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>University Courses</h1>
+            <p>Explore our comprehensive course offerings and meet our distinguished faculty</p>
+        </div>
+
+        <div class="filters">
+            <div class="filter-group">
+                <label for="department">Department:</label>
+                <select id="department">
+                    <option value="">All Departments</option>
+                    <option value="computer-science">Computer Science</option>
+                    <option value="mathematics">Mathematics</option>
+                    <option value="physics">Physics</option>
+                    <option value="engineering">Engineering</option>
+                    <option value="business">Business</option>
+                </select>
+
+                <label for="level">Level:</label>
+                <select id="level">
+                    <option value="">All Levels</option>
+                    <option value="undergraduate">Undergraduate</option>
+                    <option value="graduate">Graduate</option>
+                    <option value="phd">PhD</option>
+                </select>
+
+                <label for="search">Search:</label>
+                <input type="text" id="search" placeholder="Search courses or teachers...">
+            </div>
+        </div>
+
+        <div class="content">
+            <div class="search-results" id="searchResults">
+                Showing all courses
+            </div>
+            
+            <div class="courses-grid" id="coursesGrid">
+                <!-- Course cards will be dynamically generated here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const courses = [
+            {
+                code: 'CS401',
+                title: 'Advanced Algorithms & Data Structures',
+                department: 'Computer Science',
+                departmentKey: 'computer-science',
+                level: 'Graduate',
+                levelKey: 'graduate',
+                credits: 3,
+                schedule: 'MWF 10:00-11:00',
+                teacher: {
+                    name: 'Dr. Sarah Chen',
+                    title: 'Professor',
+                    email: 'sarah.chen@university.edu',
+                    initials: 'SC'
+                }
+            },
+            {
+                code: 'MATH301',
+                title: 'Linear Algebra & Matrix Theory',
+                department: 'Mathematics',
+                departmentKey: 'mathematics',
+                level: 'Undergraduate',
+                levelKey: 'undergraduate',
+                credits: 4,
+                schedule: 'TTh 14:00-16:00',
+                teacher: {
+                    name: 'Prof. Michael Rodriguez',
+                    title: 'Associate Professor',
+                    email: 'm.rodriguez@university.edu',
+                    initials: 'MR'
+                }
+            },
+            {
+                code: 'PHYS505',
+                title: 'Quantum Mechanics II',
+                department: 'Physics',
+                departmentKey: 'physics',
+                level: 'Graduate',
+                levelKey: 'graduate',
+                credits: 3,
+                schedule: 'MWF 13:00-14:00',
+                teacher: {
+                    name: 'Dr. Elena Petrov',
+                    title: 'Professor',
+                    email: 'e.petrov@university.edu',
+                    initials: 'EP'
+                }
+            },
+            {
+                code: 'ENG250',
+                title: 'Engineering Design Fundamentals',
+                department: 'Engineering',
+                departmentKey: 'engineering',
+                level: 'Undergraduate',
+                levelKey: 'undergraduate',
+                credits: 3,
+                schedule: 'TTh 09:00-10:30',
+                teacher: {
+                    name: 'Dr. James Wilson',
+                    title: 'Assistant Professor',
+                    email: 'j.wilson@university.edu',
+                    initials: 'JW'
+                }
+            },
+            {
+                code: 'BUS401',
+                title: 'Strategic Management',
+                department: 'Business',
+                departmentKey: 'business',
+                level: 'Graduate',
+                levelKey: 'graduate',
+                credits: 3,
+                schedule: 'MW 18:00-19:30',
+                teacher: {
+                    name: 'Prof. Lisa Thompson',
+                    title: 'Professor',
+                    email: 'l.thompson@university.edu',
+                    initials: 'LT'
+                }
+            },
+            {
+                code: 'CS101',
+                title: 'Introduction to Programming',
+                department: 'Computer Science',
+                departmentKey: 'computer-science',
+                level: 'Undergraduate',
+                levelKey: 'undergraduate',
+                credits: 4,
+                schedule: 'MWF 11:00-12:00',
+                teacher: {
+                    name: 'Dr. Ahmed Hassan',
+                    title: 'Assistant Professor',
+                    email: 'a.hassan@university.edu',
+                    initials: 'AH'
+                }
+            },
+            {
+                code: 'PHYS201',
+                title: 'Classical Mechanics',
+                department: 'Physics',
+                departmentKey: 'physics',
+                level: 'Undergraduate',
+                levelKey: 'undergraduate',
+                credits: 4,
+                schedule: 'TTh 10:00-12:00',
+                teacher: {
+                    name: 'Prof. Robert Kim',
+                    title: 'Professor',
+                    email: 'r.kim@university.edu',
+                    initials: 'RK'
+                }
+            },
+            {
+                code: 'MATH501',
+                title: 'Real Analysis',
+                department: 'Mathematics',
+                departmentKey: 'mathematics',
+                level: 'PhD',
+                levelKey: 'phd',
+                credits: 3,
+                schedule: 'MWF 15:00-16:00',
+                teacher: {
+                    name: 'Dr. Maria Gonzalez',
+                    title: 'Professor',
+                    email: 'm.gonzalez@university.edu',
+                    initials: 'MG'
+                }
+            }
+        ];
+
+        let filteredCourses = [...courses];
+
+        function createCourseCard(course) {
+            return `
+                <div class="course-card">
+                    <div class="course-header">
+                        <div class="course-code">${course.code}</div>
+                        <h3 class="course-title">${course.title}</h3>
+                        <div class="course-department">${course.department}</div>
+                    </div>
+                    
+                    <div class="course-info">
+                        <div class="info-item">
+                            <div class="info-icon">📚</div>
+                            <span>${course.credits} Credits</span>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-icon">🎓</div>
+                            <span>${course.level}</span>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-icon">📅</div>
+                            <span>${course.schedule}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="teacher-section">
+                        <div class="teacher-info">
+                            <div class="teacher-avatar">${course.teacher.initials}</div>
+                            <div class="teacher-details">
+                                <h4>${course.teacher.name}</h4>
+                                <div class="teacher-title">${course.teacher.title}</div>
+                                <a href="mailto:${course.teacher.email}" class="teacher-contact">${course.teacher.email}</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderCourses() {
+            const grid = document.getElementById('coursesGrid');
+            const resultsText = document.getElementById('searchResults');
+            
+            if (filteredCourses.length === 0) {
+                grid.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; color: #7f8c8d; padding: 40px;">No courses found matching your criteria.</div>';
+                resultsText.textContent = 'No courses found';
+            } else {
+                grid.innerHTML = filteredCourses.map(createCourseCard).join('');
+                resultsText.textContent = `Showing ${filteredCourses.length} course${filteredCourses.length !== 1 ? 's' : ''}`;
+            }
+        }
+
+        function filterCourses() {
+            const department = document.getElementById('department').value;
+            const level = document.getElementById('level').value;
+            const search = document.getElementById('search').value.toLowerCase();
+
+            filteredCourses = courses.filter(course => {
+                const matchesDepartment = !department || course.departmentKey === department;
+                const matchesLevel = !level || course.levelKey === level;
+                const matchesSearch = !search || 
+                    course.title.toLowerCase().includes(search) ||
+                    course.code.toLowerCase().includes(search) ||
+                    course.teacher.name.toLowerCase().includes(search) ||
+                    course.department.toLowerCase().includes(search);
+
+                return matchesDepartment && matchesLevel && matchesSearch;
+            });
+
+            renderCourses();
+        }
+
+        // Event listeners
+        document.getElementById('department').addEventListener('change', filterCourses);
+        document.getElementById('level').addEventListener('change', filterCourses);
+        document.getElementById('search').addEventListener('input', filterCourses);
+
+        // Initial render
+        renderCourses();
+    </script>
+</body>
+</html>
